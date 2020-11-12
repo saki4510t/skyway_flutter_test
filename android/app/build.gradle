@@ -60,6 +60,10 @@ android {
 			signingConfig signingConfigs.debug
 		}
 	}
+
+	kotlinOptions {
+		jvmTarget = '1.8'
+	}
 }
 
 flutter {
@@ -71,6 +75,9 @@ dependencies {
 
 	implementation "androidx.appcompat:appcompat:${androidXVersion}"
 	implementation "androidx.legacy:legacy-support-v4:${androidXLegacyV4}"
+	implementation "androidx.core:core-ktx:${androidXKtxCore}"
+	implementation "androidx.collection:collection-ktx:${androidXKtxCollection}"
+	implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxCoroutines}"
 
 	implementation project(':skyway-sdk')
 }
