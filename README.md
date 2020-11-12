@@ -1,16 +1,55 @@
 # skyway_flutter_test
 
-A new Flutter application using skyway sdk.
+NTT CommunicationsのSkyWayのSDKを用いたWebRTCのビデオチャットの非公式サンプルアプリです。
 
-## Getting Started
+Apache License Version 2.0
+Copyright (c) 2020 t_saki@serenegiant.com
 
-This project is a starting point for a Flutter application.
+## 内容
 
-A few resources to get you started if this is your first Flutter project:
+* Flutter/Androidで動かせるSkyWayのサンプルが見当たらないので適当にでっち上げました。
+* p2pでの1:1でのビデオチャット、SFUおよびMesh(p2p)を使ったn:nビデオカンファレンスの３種類を実装しています。
+* SkyWay公式のサンプルアプリ等とも接続可能です(同じAPIキーを設定しないといけませんが)
+* APIキー認証は実装していません。難しくはないですが真面目に作るには外部に認証用のサーバーが必要になるので。もしかすると気が向いたらOkHttpのモックサーバーか何かを使ってなんちゃってAPIキー認証を実装するかもしれませんが(アプリ内で実装してもセキュリティー向上にはなりませんが)。
+* iOS用は公開されている方がいるのと飽きたので作っていませんm(_ _)m 対応するプラットフォーム側の処理を実装すれば動くでしょう。
+* 面倒なのでプラグインにはせずに、FultterActivityを継承したMainActivityでメソッドチャネル/イベントチャネルを使って実装しています。
+* UIパート ↔ skyway.dart ↔ MethodChannel/EventChannel ↔ MainActivity.kt ↔ FlutterSkywayPeer.java ↔ SkyWay SDKのようにイベント・メソッドコールが呼び出されます。
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## 準備
+SkyWayでアプリケーションの登録をしてください。 [SkyWay](https://webrtc.ecl.ntt.com/)
+SkyWayのアカウントを持っていない人はあらかじめアカウント(テスト目的では無料で十分です)を作ることができます。
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+SkyWayのアプリケーションの設定では次のように設定してください。
+
+* 利用可能ドメインに`localhost`の設定があることを確認してください。
+* 「listAllPeers APIを利用する」にチェックを入れてください。
+* 「APIキー認証を利用する」のチェックを外してください
+* SFUでの接続を試す場合には「SFUを利用する」にチェックを入れてください。
+
+SkyWayアプリケーションの設定画面でAPIキーをメモしておいてください。アプリに入力する必要があります。
+
+## 使い方
+
+* 適当なところにクローンしてからAndroid Studioで開いてください。
+* コンソール好きな人はコンソールからでもビルドできます。
+* Runするとアプリが起動します。
+* 最初に表示される画面でSkyWayのAPIキーとドメインを入力してください。モバイルなのでドメインはデフォルトの`localhost`のままでかまいませんが、SkyWay側のアプリケーションの設定で`localhost`を使用可能にしておいてください。
+* APIキーとドメインを入力すると、`P2P`, `SFU`, `Mesh`のボタンが表示されますので、好きなのを選んでタッチしてください。
+
+### p2pの場合
+
+* 画面遷移後`connect`をタッチするとSkyWayのサーバーへ接続します。
+* p2pの場合はlistAllPeers APIを使って同じSkyWayのアプリケーションへアクセスしているピア一覧を表示します。自動更新はしていませんので適時`Refresh`ボタンで更新してください。
+* 表示されたピア一覧から１つを選択するとp2pでの接続を行います。
+* `HangUp`をボタン押すとビデオチャットを終了します。ただしこの時点ではSkyWayのサーバーとは接続したままになっています。
+* ビデオチャット中または`HangUp`後に`disconnect`ボタンを押すとSkyWayのサーバーから切断し最初の状態に戻ります。
+* バックキーまたは左上の`<`ボタンで前画面に戻ります。
+
+### sfsとmeshの場合
+* 画面遷移後`connect`をタッチするとSkyWayのサーバーへ接続します。
+* 入力フィールドがあるのでルーム名を入力してください。入力チェックはしていませんが英数のみが使用可能です。
+* `connect`を押す前にルーム名を入力すると接続自動的に指定したルームに入室します。
+* `connect`を押した後にルーム名を入力した場合には`Enter`ボタンを押すと入室できます。
+* 同じAPIキーで同じルーム名を指定したアプリ同士でビデオカンファレンスが可能です。
+* 一応端末の性能が許す限りの相手と接続できますが端末3台までしか動作確認していません。
+* リモート側が4台まではスクロールなしで表示できるように作ったつもりですがどうなるかはわかりません。
